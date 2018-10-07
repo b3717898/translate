@@ -15,7 +15,6 @@ class AbstractInterpretor(object):
     __metaclass__ = ABCMeta
 
     def __init__(self):
-        self.headers = ''
         self.chinese_words = re.compile(u"\"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")
 
     def __str__(self):
@@ -25,35 +24,39 @@ class AbstractInterpretor(object):
     def __repr__(self):
         return repr(self.headers)
 
-    def convertfile(self, file):
-        file_name_tr = os.path.basename(file).split('.')[0] + '_transdone.txt'
-        open_file = codecs.open(file, 'r', 'utf-8')
-        open_file_w = codecs.open(os.path.join(os.path.dirname(file), file_name_tr), 'w', 'utf-8')
+    def convertfile(self, input_file, output_file):
+        file_name = os.path.basename(input_file).split('.')[0]
+        file_name_tr = os.path.basename(input_file).split('.')[0] + '_transdone.txt'
+        open_file = codecs.open(input_file, 'r', 'utf-8')
+        open_file_w = codecs.open(os.path.join(os.path.dirname(input_file), file_name_tr), 'w', 'utf-8')
         is_translated = True
+        enum_lines = [] # ['','']
         try:
             for line in open_file.readlines():
-                trans_line = self._convertline(line)
+                trans_line, enum_lines = self._convertline(line, file_name)
                 open_file_w.write(trans_line)
+                if len(enum_lines) > 0:
+                    output_file.writelines(enum_lines)
                 # print trans_line
             # print os.path.abspath(file) + ":translate done"
         except Exception, e:
             is_translated = False
-            print 'translate error:{}'.format(e)
+            print 'convert file error:{}'.format(e)
         finally:
             open_file.close()
             open_file_w.close()
         if is_translated:
             #   rename translated file to original file & del the translated file
             try:
-                abs_file = os.path.abspath(file)
-                file_rename_to = os.path.join(os.path.dirname(file), os.path.basename(file) + '_rename')
+                abs_file = os.path.abspath(input_file)
+                file_rename_to = os.path.join(os.path.dirname(input_file), os.path.basename(input_file) + '_rename')
                 os.rename(abs_file, file_rename_to)
-                os.rename(os.path.join(os.path.dirname(file), file_name_tr), abs_file)
+                os.rename(os.path.join(os.path.dirname(input_file), file_name_tr), abs_file)
                 os.remove(file_rename_to)
-                print abs_file + ":translate done:" + str(datetime.datetime.now())
+                print abs_file + ":convert done:" + str(datetime.datetime.now())
             except Exception, e:
-                print 'translate file error:{}'.format(e)
+                print 'convert file error:{}'.format(e)
 
 
     @abstractmethod
-    def _convertline(self, line): pass
+    def _convertline(self, line, file_name): pass
