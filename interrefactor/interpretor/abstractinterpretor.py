@@ -16,6 +16,10 @@ class AbstractInterpretor(object):
 
     def __init__(self):
         self.chinese_words = re.compile(u"\"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")
+        # self.index = 1
+        self.line = 1
+        self.prop_name = {}
+        self.globe_count = 1
 
     def __str__(self):
         return str(self.headers)
@@ -25,6 +29,8 @@ class AbstractInterpretor(object):
         return repr(self.headers)
 
     def convertfile(self, input_file, output_file):
+        # self.index = 1
+        self.line = 1
         file_name = os.path.basename(input_file).split('.')[0]
         file_name_tr = os.path.basename(input_file).split('.')[0] + '_transdone.txt'
         open_file = codecs.open(input_file, 'r', 'utf-8')
@@ -37,6 +43,7 @@ class AbstractInterpretor(object):
                 open_file_w.write(trans_line)
                 if len(enum_lines) > 0:
                     output_file.writelines(enum_lines)
+                self.line += 1
                 # print trans_line
             # print os.path.abspath(file) + ":translate done"
         except Exception, e:

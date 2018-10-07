@@ -50,6 +50,9 @@ if __name__ == '__main__':
     i18n_path = '/workspace/PYTHON/translate/test'
     if len(sys.argv) > 2:
         i18n_path = sys.argv[2]
+    output_filename = 'Trans4Java.java'
+    if len(sys.argv) > 3:
+        output_filename = sys.argv[3]
 
     interpretors["java"] = JavaInterpretor()
     # interpretors["jsp"] = JspInterpretor()
@@ -57,15 +60,15 @@ if __name__ == '__main__':
     # interpretors["xml"] = XMLInterpretor()
 
     # build a enum file
-    enum_file_java = os.path.join(i18n_path, "Trans4Java.java")
+    enum_file_java = os.path.join(i18n_path, output_filename)
     enum_file_java_w = codecs.open(enum_file_java, 'w', 'utf-8')
     try:
         enum_file_java_content = ["package com.rydeen.boh.core.i18n;\n", "\n", "public interface Trans4Java {\n",
                              "    /** 测试翻译内容 */\n",
-                             "    String TEST_TRANS_CONTENT = \"测试翻译内容\";"]
+                             "    String TEST_TRANS_CONTENT = \"测试翻译内容\";\n"]
         # todo list
-        interpret_path(src_path, enum_file_java_w)
         enum_file_java_w.writelines(enum_file_java_content)
+        interpret_path(src_path, enum_file_java_w)
         enum_file_java_content = ["}\n", "\n"]
         enum_file_java_w.writelines(enum_file_java_content)
     except Exception, e:
