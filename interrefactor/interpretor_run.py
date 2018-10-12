@@ -14,10 +14,11 @@ from config.config import *
 from util.commandutil import *
 from interpretor.abstractinterpretor import *
 from interpretor.javainterpretor import *
+from interpretor.java4i18ninterpretor import *
 
 interpretors = {}
 
-def interpret_path(path, enum_file_java_w):
+def interpret_path(path, enum_file_java_w, const_file_java_w):
     if os.path.isdir(path):
         for file in os.listdir(path):
             file_path = os.path.join(path, file)
@@ -26,7 +27,7 @@ def interpret_path(path, enum_file_java_w):
                     pass
                 elif '.java' in file:
                     tran_file = os.path.join(path, file)
-                    interpretors["java"].convertfile(tran_file, enum_file_java_w)
+                    interpretors["java"].convertfile(tran_file, enum_file_java_w, const_file_java_w)
                 elif '.jsp' in file:
                     # todo list
                     pass
@@ -38,7 +39,7 @@ def interpret_path(path, enum_file_java_w):
                     pass
 
             else:
-                interpret_path(file_path, enum_file_java_w)
+                interpret_path(file_path, enum_file_java_w, const_file_java_w)
     else:
         print 'the input is not a folder:' + path
 
@@ -50,11 +51,11 @@ if __name__ == '__main__':
     i18n_path = '/workspace/PYTHON/translate/test'
     if len(sys.argv) > 2:
         i18n_path = sys.argv[2]
-    output_filename = 'Trans4Java.java'
-    if len(sys.argv) > 3:
-        output_filename = sys.argv[3]
+    output_filename = JAVA_COMMON_4_I18N_ENUM_OUTPUT_FILENAME
+    const_output_filename = JAVA_COMMON_4_I18N_CONST_OUTPUT_FILENAME
 
-    interpretors["java"] = JavaInterpretor()
+
+    interpretors["java"] = Java4i18nInterpretor()
     # interpretors["jsp"] = JspInterpretor()
     # interpretors["js"] = JsInterpretor()
     # interpretors["xml"] = XMLInterpretor()
@@ -62,19 +63,29 @@ if __name__ == '__main__':
     # build a enum file
     enum_file_java = os.path.join(i18n_path, output_filename)
     enum_file_java_w = codecs.open(enum_file_java, 'w', 'utf-8')
+
+    const_file_java = os.path.join(i18n_path, const_output_filename)
+    const_file_java_w = codecs.open(const_file_java, 'w', 'utf-8')
     try:
-        enum_file_java_content = ["package com.rydeen.boh.core.i18n;\n", "\n", "public interface Trans4Java {\n",
+        const_file_java_content = ["package " + JAVA_COMMON_4_I18N_CONST_PACKAGE_NAME +
+                                   ";\n", "\n", "public interface " +
+                                   JAVA_COMMON_4_I18N_CONST_OUTPUT_FILENAME.replace(".java", "") + " {\n",
                              "    /** 测试翻译内容 */\n",
                              "    String TEST_TRANS_CONTENT = \"测试翻译内容\";\n"]
+        enum_file_java_content = ["#This is an i18n propteries file \n", "\n",
+                                  "# 测试翻译内容 \n",
+                                  "TEST_TRANS_CONTENT = 测试翻译内容\n"]
         # todo list
         enum_file_java_w.writelines(enum_file_java_content)
-        interpret_path(src_path, enum_file_java_w)
-        enum_file_java_content = ["}\n", "\n"]
-        enum_file_java_w.writelines(enum_file_java_content)
+        const_file_java_w.writelines(const_file_java_content)
+        interpret_path(src_path, enum_file_java_w, const_file_java_w)
+        const_file_java_content = ["}\n", "\n"]
+        const_file_java_w.writelines(const_file_java_content)
     except Exception, e:
         print 'build i18n file error:{}'.format(e)
     finally:
         enum_file_java_w.close()
+        const_file_java_w.close()
 
     # if os.path.isdir(path):
     #     for file in os.listdir(path):

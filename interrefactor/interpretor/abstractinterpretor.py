@@ -16,6 +16,8 @@ class AbstractInterpretor(object):
 
     def __init__(self):
         self.chinese_words = re.compile(u"\"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")
+        self.chinese_words_with_CASE = re.compile(u"case \"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")
+        self.comment_words = re.compile(u"//.*[\u4e00-\u9fa5]+.*")
         # self.index = 1
         self.line = 1
         self.prop_name = {}
@@ -28,7 +30,7 @@ class AbstractInterpretor(object):
     def __repr__(self):
         return repr(self.headers)
 
-    def convertfile(self, input_file, output_file):
+    def convertfile(self, input_file, output_file, const_output_file):
         # self.index = 1
         self.line = 1
         file_name = os.path.basename(input_file).split('.')[0]
@@ -39,10 +41,12 @@ class AbstractInterpretor(object):
         enum_lines = [] # ['','']
         try:
             for line in open_file.readlines():
-                trans_line, enum_lines = self._convertline(line, file_name)
+                trans_line, enum_lines, const_lines = self._convertline(line, file_name)
                 open_file_w.write(trans_line)
                 if len(enum_lines) > 0:
                     output_file.writelines(enum_lines)
+                if len(const_lines) > 0:
+                    const_output_file.writelines(const_lines)
                 self.line += 1
                 # print trans_line
             # print os.path.abspath(file) + ":translate done"
