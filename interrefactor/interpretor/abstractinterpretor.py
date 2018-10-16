@@ -18,6 +18,9 @@ class AbstractInterpretor(object):
         self.chinese_words = re.compile(u"\"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")
         self.chinese_words_with_CASE = re.compile(u"case \"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")
         self.comment_words = re.compile(u"//.*[\u4e00-\u9fa5]+.*")
+        self.gtlt_words = re.compile(u">[^<]*[\u4e00-\u9fa5]+[^<]*</")
+        self.squote_words = re.compile(u"'[^']*[\u4e00-\u9fa5]+[^']*'")
+
         # self.index = 1
         self.line = 1
         self.prop_name = {}

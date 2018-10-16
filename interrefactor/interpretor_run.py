@@ -15,10 +15,11 @@ from util.commandutil import *
 from interpretor.abstractinterpretor import *
 from interpretor.javainterpretor import *
 from interpretor.java4i18ninterpretor import *
+from interpretor.jsp4i18ninterpretor import *
 
 interpretors = {}
 
-def interpret_path(path, enum_file_java_w, const_file_java_w):
+def interpret_path(path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w):
     if os.path.isdir(path):
         for file in os.listdir(path):
             file_path = os.path.join(path, file)
@@ -29,7 +30,8 @@ def interpret_path(path, enum_file_java_w, const_file_java_w):
                     tran_file = os.path.join(path, file)
                     interpretors["java"].convertfile(tran_file, enum_file_java_w, const_file_java_w)
                 elif '.jsp' in file:
-                    # todo list
+                    tran_file = os.path.join(path, file)
+                    interpretors["jsp"].convertfile(tran_file, jsp_enum_file_java_w, const_file_java_w)
                     pass
                 elif '.js' in file:
                     # todo list
@@ -53,16 +55,20 @@ if __name__ == '__main__':
         i18n_path = sys.argv[2]
     output_filename = JAVA_COMMON_4_I18N_ENUM_OUTPUT_FILENAME
     const_output_filename = JAVA_COMMON_4_I18N_CONST_OUTPUT_FILENAME
+    jsp_output_filename = JAVA_COMMON_4_I18N_JSP_ENUM_OUTPUT_FILENAME
 
 
     interpretors["java"] = Java4i18nInterpretor()
-    # interpretors["jsp"] = JspInterpretor()
+    interpretors["jsp"] = Jsp4i18nInterpretor()
     # interpretors["js"] = JsInterpretor()
     # interpretors["xml"] = XMLInterpretor()
 
     # build a enum file
     enum_file_java = os.path.join(i18n_path, output_filename)
     enum_file_java_w = codecs.open(enum_file_java, 'w', 'utf-8')
+
+    jsp_enum_file_java = os.path.join(i18n_path, jsp_output_filename)
+    jsp_enum_file_java_w = codecs.open(jsp_enum_file_java, 'w', 'utf-8')
 
     const_file_java = os.path.join(i18n_path, const_output_filename)
     const_file_java_w = codecs.open(const_file_java, 'w', 'utf-8')
@@ -78,7 +84,8 @@ if __name__ == '__main__':
         # todo list
         enum_file_java_w.writelines(enum_file_java_content)
         const_file_java_w.writelines(const_file_java_content)
-        interpret_path(src_path, enum_file_java_w, const_file_java_w)
+        jsp_enum_file_java_w.writelines(enum_file_java_content)
+        interpret_path(src_path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w)
         const_file_java_content = ["}\n", "\n"]
         const_file_java_w.writelines(const_file_java_content)
     except Exception, e:
@@ -86,6 +93,7 @@ if __name__ == '__main__':
     finally:
         enum_file_java_w.close()
         const_file_java_w.close()
+        jsp_enum_file_java_w.close()
 
     # if os.path.isdir(path):
     #     for file in os.listdir(path):
