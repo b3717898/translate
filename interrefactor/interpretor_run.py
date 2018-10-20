@@ -16,10 +16,11 @@ from interpretor.abstractinterpretor import *
 from interpretor.javainterpretor import *
 from interpretor.java4i18ninterpretor import *
 from interpretor.jsp4i18ninterpretor import *
+from interpretor.js4i18ninterpretor import *
 
 interpretors = {}
 
-def interpret_path(path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w):
+def interpret_path(path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w, js_enum_file_java_w):
     if os.path.isdir(path):
         for file in os.listdir(path):
             file_path = os.path.join(path, file)
@@ -32,16 +33,16 @@ def interpret_path(path, enum_file_java_w, const_file_java_w, jsp_enum_file_java
                 elif '.jsp' in file:
                     tran_file = os.path.join(path, file)
                     interpretors["jsp"].convertfile(tran_file, jsp_enum_file_java_w, const_file_java_w)
-                    pass
                 elif '.js' in file:
-                    # todo list
+                    tran_file = os.path.join(path, file)
+                    interpretors["js"].convertfile(tran_file, js_enum_file_java_w, const_file_java_w)
                     pass
                 elif '.xml' in file:
                     # todo list
                     pass
 
             else:
-                interpret_path(file_path, enum_file_java_w, const_file_java_w)
+                interpret_path(file_path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w, js_enum_file_java_w)
     else:
         print 'the input is not a folder:' + path
 
@@ -56,11 +57,12 @@ if __name__ == '__main__':
     output_filename = JAVA_COMMON_4_I18N_ENUM_OUTPUT_FILENAME
     const_output_filename = JAVA_COMMON_4_I18N_CONST_OUTPUT_FILENAME
     jsp_output_filename = JAVA_COMMON_4_I18N_JSP_ENUM_OUTPUT_FILENAME
+    js_output_filename = JAVA_COMMON_4_I18N_JS_ENUM_OUTPUT_FILENAME
 
 
     interpretors["java"] = Java4i18nInterpretor()
     interpretors["jsp"] = Jsp4i18nInterpretor()
-    # interpretors["js"] = JsInterpretor()
+    interpretors["js"] = Js4i18nInterpretor()
     # interpretors["xml"] = XMLInterpretor()
 
     # build a enum file
@@ -69,6 +71,9 @@ if __name__ == '__main__':
 
     jsp_enum_file_java = os.path.join(i18n_path, jsp_output_filename)
     jsp_enum_file_java_w = codecs.open(jsp_enum_file_java, 'w', 'utf-8')
+
+    js_enum_file_java = os.path.join(i18n_path, js_output_filename)
+    js_enum_file_java_w = codecs.open(js_enum_file_java, 'w', 'utf-8')
 
     const_file_java = os.path.join(i18n_path, const_output_filename)
     const_file_java_w = codecs.open(const_file_java, 'w', 'utf-8')
@@ -81,19 +86,26 @@ if __name__ == '__main__':
         enum_file_java_content = ["#This is an i18n propteries file \n", "\n",
                                   "# 测试翻译内容 \n",
                                   "TEST_TRANS_CONTENT = 测试翻译内容\n"]
+        js_file_java_content = ["/*This is an js i18n propteries file */\n", "\n",
+                                  "var M4JS = {\n"]
         # todo list
         enum_file_java_w.writelines(enum_file_java_content)
         const_file_java_w.writelines(const_file_java_content)
         jsp_enum_file_java_w.writelines(enum_file_java_content)
-        interpret_path(src_path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w)
+        js_enum_file_java_w.writelines(js_file_java_content)
+        interpret_path(src_path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w, js_enum_file_java_w)
         const_file_java_content = ["}\n", "\n"]
         const_file_java_w.writelines(const_file_java_content)
+
+        js_file_java_content = ["}\n", "\n"]
+        js_enum_file_java_w.writelines(js_file_java_content)
     except Exception, e:
         print 'build i18n file error:{}'.format(e)
     finally:
         enum_file_java_w.close()
         const_file_java_w.close()
         jsp_enum_file_java_w.close()
+        js_enum_file_java_w.close()
 
     # if os.path.isdir(path):
     #     for file in os.listdir(path):

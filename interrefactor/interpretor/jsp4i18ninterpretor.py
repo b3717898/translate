@@ -51,7 +51,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
             retvalue = retvalue.replace(match.group(), replace_str)
 
             match_str = match.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
-            match_str = match.group().replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+            match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
             match_str = match_str[1:-2]
             enum_lines.append("#{}\n".format(match_str))
             enum_lines.append("{} = {}\n".format(prop_name, match_str.encode('unicode_escape')))
@@ -72,7 +72,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
             retvalue = retvalue.replace(match.group(), replace_str)
 
             match_str = match.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
-            match_str = match.group().replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+            match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
             match_str = match_str[1:-1]
             enum_lines.append("#{}\n".format(match_str))
             enum_lines.append("{} = {}\n".format(prop_name, match_str.encode('unicode_escape')))
@@ -93,7 +93,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
             retvalue = retvalue.replace(match.group(), replace_str)
 
             match_str = match.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
-            match_str = match.group().replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+            match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
             match_str = match_str[1:-1]
             enum_lines.append("#{}\n".format(match_str))
             enum_lines.append("{} = {}\n".format(prop_name, match_str.encode('unicode_escape')))
