@@ -37,15 +37,16 @@ class Js4i18nInterpretor(AbstractInterpretor):
                     self.globe_count += 1
                 self.prop_name[prop_name] = "1"
                 # CommonI18n.rb.getString("COMMON.SEARCH");
-                replace_str_sub = ">' + {}.{} + '</".format(JAVA_COMMON_4_I18N_JS_ENUM_OUTPUT_PREFIX, prop_name)
+                replace_str_sub = ">' + {}.{} + '<".format(JAVA_COMMON_4_I18N_JS_ENUM_OUTPUT_PREFIX, prop_name)
                 retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
                 match_str = match_sub.group()
-                match_str = match_str[1:-2]
+                match_str = match_str[1:-1]
                 enum_lines.append("//{}\n".format(match_str))
                 enum_lines.append("{}:\"{}\",\n".format(prop_name, match_str.replace("\"", "\\\"")))
                 index += 1
             retvalue = retvalue.replace(match.group(), retvalue_sub)
 
+        # print retvalue
         it = re.finditer(self.slash_squote_words,
                          retvalue)  # for cashDailyPosItemConfigTableDiv.push('\'项目\'');
         for match in it:
@@ -58,11 +59,13 @@ class Js4i18nInterpretor(AbstractInterpretor):
                 self.globe_count += 1
             self.prop_name[prop_name] = "1"
             # CommonI18n.rb.getString("COMMON.SEARCH");
-            replace_str = "\'' + {}.{} + '\'".format(JAVA_COMMON_4_I18N_JS_ENUM_OUTPUT_PREFIX, prop_name)
+            replace_str = "\\\'' + {}.{} + '\\\'".format(JAVA_COMMON_4_I18N_JS_ENUM_OUTPUT_PREFIX, prop_name)
+            # print match.group()
             retvalue = retvalue.replace(match.group(), replace_str)
 
             match_str = match.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
             match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+            # print(match_str)
             match_str = match_str[2:-2]
             enum_lines.append("//{}\n".format(match_str))
             enum_lines.append("{}:\"{}\",\n".format(prop_name, match_str.replace("\"", "\\\"")))

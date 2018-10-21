@@ -18,11 +18,14 @@ class AbstractInterpretor(object):
         self.chinese_words = re.compile(u"\"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")        # abc = "吃饭吃饭"
         self.chinese_words_with_CASE = re.compile(u"case \"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")     # case "吃饭吃饭"
         self.comment_words = re.compile(u"//.*[\u4e00-\u9fa5]+.*")          # //吃饭吃饭
-        self.gtlt_words = re.compile(u">[^<]*[\u4e00-\u9fa5]+[^<]*</")      # >吃饭吃饭</
+        self.gtlt_words = re.compile(u">[^<]*[\u4e00-\u9fa5]+[^<]*<")      # >吃饭吃饭</
         self.squote_words = re.compile(u"'[^']*[\u4e00-\u9fa5]+[^']*'")     # abc = '吃饭吃饭'
-        self.slash_squote_words = re.compile(u"\'[^']*[\u4e00-\u9fa5]+[^']*\'")  # abc = \'吃饭吃饭\'
+        self.slash_squote_words = re.compile(u"\\\\'[^']*[\u4e00-\u9fa5]+[^']*\\\\'")  # abc = \'吃饭吃饭\'
         self.qtlt_with_squote_words = re.compile(u"'\s*<.*>[^<]*[\u4e00-\u9fa5]+[^<]*</")    # cashDailyPosItemConfigTableDiv.push('<th width="120">项目</th>');
         self.qtlt_with_quote_words = re.compile(u"\"\s*<.*>[^<]*[\u4e00-\u9fa5]+[^<]*</")    # + "<a href='#' class='blue'  onclick=\"updateSpecialCashier('"+this.guid+"')\" >修改</a>&nbsp;&nbsp;"
+        self.gt_dollar_words = re.compile(u">[^<}]*[\u4e00-\u9fa5]+[^$]*\\$\\{")    # <span class="span_left-rgm" ><h4>订单号:${result.storeOrderInfoBean.orderCode} &nbsp;&nbsp;订货日期： $/dfdfdfd>
+        self.dollar_dollar_words = re.compile(u"}[^}]*[\u4e00-\u9fa5]+[^$]*\\$\\{")    # storeOrderInfoBean.orderCode} &nbsp;&nbsp;订货日期： ${/dfdfdfd>
+        self.dollar_lt_words = re.compile(u"}[^}]*[\u4e00-\u9fa5]+[^<]*<")    # displayName }  已确认调入接收完成！ </span>
 
         # self.index = 1
         self.line = 1
