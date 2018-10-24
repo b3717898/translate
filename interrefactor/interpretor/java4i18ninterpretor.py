@@ -25,13 +25,15 @@ class Java4i18nInterpretor(AbstractInterpretor):
         it_case = re.finditer(self.chinese_words_with_CASE, retvalue)
         for match in it_case:
             prop_name = "{}_L{}".format(file_name, str(self.line))
+            match_str = match.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+            key, other_key, matched = self.findkey(prop_name, match_str.replace("case ", ""), "C")
+            if not matched:  # key not matched
+                const_lines.append("    /** {} */\n".format(match_str))
+                const_lines.append("    String {} = {};\n".format(key, match_str.replace("case ", "")))
             replace_str = "case {}.{}.{}".format(JAVA_COMMON_4_I18N_CONST_PACKAGE_NAME,
                                             JAVA_COMMON_4_I18N_CONST_OUTPUT_FILENAME.replace(".java", ""),
-                                            prop_name)
+                                            key)
             retvalue = retvalue.replace(match.group(), replace_str)
-            match_str = match.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
-            const_lines.append("    /** {} */\n".format(match_str))
-            const_lines.append("    String {} = {};\n".format(prop_name, match_str.replace("case ", "")))
 
         it = re.finditer(self.chinese_words, retvalue)
         enum_lines = []
@@ -46,13 +48,15 @@ class Java4i18nInterpretor(AbstractInterpretor):
                 self.globe_count += 1
             self.prop_name[prop_name] = "1"
             # CommonI18n.rb.getString("COMMON.SEARCH");
-            replace_str = "{}.rb.getString(\"{}\")".format(JAVA_COMMON_4_I18N_ENUM_CLASSNAME, prop_name)
-            retvalue = retvalue.replace(match.group(), replace_str)
 
             match_str = match.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
             match_str = match_str[1:-1]
-            enum_lines.append("#{}\n".format(match_str))
-            enum_lines.append("{} = {}\n".format(prop_name, match_str.encode('unicode_escape')))
+            key, other_key, matched = self.findkey(prop_name, match_str.encode('unicode_escape'), "P")
+            replace_str = "{}.rb.getString(\"{}\")".format(JAVA_COMMON_4_I18N_ENUM_CLASSNAME, key)
+            retvalue = retvalue.replace(match.group(), replace_str)
+            if not matched:
+                enum_lines.append("#{}\n".format(match_str))
+                enum_lines.append("{} = {}\n".format(prop_name, match_str.encode('unicode_escape')))
             index += 1
         retvalue = retvalue.replace("[$TEMP_QUOTE_STR$]", "\\\"")
         retvalue = retvalue.replace("[$TEMP_COMMENT_STR$]", comment_temp_str)

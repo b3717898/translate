@@ -10,22 +10,47 @@ import os
 import codecs
 import datetime
 
+props = {}
+js_props = {}
+case_props = {}
 
 class AbstractInterpretor(object):
     __metaclass__ = ABCMeta
 
     def __init__(self):
+
+
         self.chinese_words = re.compile(u"\"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")        # abc = "吃饭吃饭"
+        self.chinese_without_gt_words = re.compile(u"\"[^\">]*[\u4e00-\u9fa5]+[^\">]*\"")  # abc = "吃饭吃饭"
         self.chinese_words_with_CASE = re.compile(u"case \"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")     # case "吃饭吃饭"
         self.comment_words = re.compile(u"//.*[\u4e00-\u9fa5]+.*")          # //吃饭吃饭
-        self.gtlt_words = re.compile(u">[^<]*[\u4e00-\u9fa5]+[^<]*<")      # >吃饭吃饭</
+        self.gtlt_words = re.compile(u">[^><]*[\u4e00-\u9fa5]+[^<>]*<")      # >吃饭吃饭</
         self.squote_words = re.compile(u"'[^']*[\u4e00-\u9fa5]+[^']*'")     # abc = '吃饭吃饭'
         self.slash_squote_words = re.compile(u"\\\\'[^']*[\u4e00-\u9fa5]+[^']*\\\\'")  # abc = \'吃饭吃饭\'
         self.qtlt_with_squote_words = re.compile(u"'\s*<.*>[^<]*[\u4e00-\u9fa5]+[^<]*</")    # cashDailyPosItemConfigTableDiv.push('<th width="120">项目</th>');
         self.qtlt_with_quote_words = re.compile(u"\"\s*<.*>[^<]*[\u4e00-\u9fa5]+[^<]*</")    # + "<a href='#' class='blue'  onclick=\"updateSpecialCashier('"+this.guid+"')\" >修改</a>&nbsp;&nbsp;"
-        self.gt_dollar_words = re.compile(u">[^<}]*[\u4e00-\u9fa5]+[^$]*\\$\\{")    # <span class="span_left-rgm" ><h4>订单号:${result.storeOrderInfoBean.orderCode} &nbsp;&nbsp;订货日期： $/dfdfdfd>
-        self.dollar_dollar_words = re.compile(u"}[^}]*[\u4e00-\u9fa5]+[^$]*\\$\\{")    # storeOrderInfoBean.orderCode} &nbsp;&nbsp;订货日期： ${/dfdfdfd>
-        self.dollar_lt_words = re.compile(u"}[^}]*[\u4e00-\u9fa5]+[^<]*<")    # displayName }  已确认调入接收完成！ </span>
+        self.gt_dollar_words = re.compile(u">[^<>}]*[\u4e00-\u9fa5]+[^$<>]*\\$\\{")    # <span class="span_left-rgm" ><h4>订单号:${result.storeOrderInfoBean.orderCode} &nbsp;&nbsp;订货日期： $/dfdfdfd>
+        self.dollar_dollar_words = re.compile(u"}[^}>]*[\u4e00-\u9fa5]+[^$>]*\\$\\{")    # storeOrderInfoBean.orderCode} &nbsp;&nbsp;订货日期： ${/dfdfdfd>
+        self.dollar_lt_words = re.compile(u"}[^}]*[\u4e00-\u9fa5]+[^<>}]*<")    # displayName }  已确认调入接收完成！ </span>
+
+        self.squote_dollar_words = re.compile(u"'[^'{]*[\u4e00-\u9fa5]+[^$]*\\$\\{")    # 2. '吃饭${item.manhourTypeDesc}(非餐期)${dfdf}吃饭吃饭'
+        self.dollar_squote_words = re.compile(u"}[^}]*[\u4e00-\u9fa5]+[^'}]*'")    # 2. '吃饭${item.manhourTypeDesc}(非餐期)${dfdf}吃饭吃饭'
+        self.quote_dollar_words = re.compile(
+            u"\"[^\"{]*[\u4e00-\u9fa5]+[^$]*\\$\\{")  # 2. "吃饭${item.manhourTypeDesc}(非餐期)${dfdf}吃饭吃饭"
+        self.dollar_quote_words = re.compile(
+            u"}[^}]*[\u4e00-\u9fa5]+[^\"}]*\"")  # 2. "吃饭${item.manhourTypeDesc}(非餐期)${dfdf}吃饭吃饭"
+        self.slash_quote_words = re.compile(u"\\\\\"[^\"]*[\u4e00-\u9fa5]+[^\"]*\\\\\"")  # abc = \"吃饭吃饭\"
+        self.tab_lt_words = re.compile(u"\\t[^\\t<\"{]*[\u4e00-\u9fa5]+[^<{]*<")  #      吃饭<
+        self.gt_nl_words = re.compile(u">[^><$]*[\u4e00-\u9fa5]+[^<$]*\\r")  #      >吃饭\n
+
+        self.tab_nl_words = re.compile(u"\\t[^\\t<;]*[\u4e00-\u9fa5]+[^<]*\\r")  # 吃饭\n
+        self.gt_gt_words = re.compile(u">[^><]*[\u4e00-\u9fa5]+[^<>]*>")  # >  吃饭>
+        self.tab_dollar_words = re.compile(u"\\t[^\\t{]*[\u4e00-\u9fa5]+[^$<]*\\$\\{")  #  吃饭${
+        self.dollar_nl_words = re.compile(u"}[^}]*[\u4e00-\u9fa5]+[^}]*\\r")  # }吃饭\n
+        self.comment_comment_words = re.compile(u"<!--.*[\u4e00-\u9fa5]+.*-->")  # <!--.吃饭.*-->
+
+
+
 
         # self.index = 1
         self.line = 1
@@ -80,3 +105,34 @@ class AbstractInterpretor(object):
 
     @abstractmethod
     def _convertline(self, line, file_name): pass
+
+    def findkey(self, key, value, flag):# key:properties 里面的key，或者js里面的key；flag：是java/jsp还是js的key;value:传入的显示内容
+        global props
+        global js_props
+        global case_props
+        retvalue = key
+        other_key = None
+        matched = False
+        if flag == "P": # java & jsp properties
+            if value in props:
+                retvalue = props[value]
+                matched = True
+            else:
+                props[value] = key
+            if value in js_props:
+                other_key = js_props[value]
+        elif flag == "J": # js properties
+            if value in js_props:
+                retvalue = js_props[value]
+                matched = True
+            else:
+                js_props[value] = key
+            if value in props:
+                other_key = props[value]
+        elif flag == "C": # case props
+            if value in case_props:
+                retvalue = case_props[value]
+                matched = True
+            else:
+                case_props[value] = key
+        return retvalue, other_key, matched
