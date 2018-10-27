@@ -31,6 +31,7 @@ def interpret_path(path, enum_file_java_w, const_file_java_w, jsp_enum_file_java
                     tran_file = os.path.join(path, file)
                     interpretors["java"].convertfile(tran_file, common_enum_file_java_w, const_file_java_w)
                 elif '.jsp' in file:
+                    # continue
                     tran_file = os.path.join(path, file)
                     interpretors["jsp"].convertfile(tran_file, common_enum_file_java_w, const_file_java_w)
                 elif '.js' in file:

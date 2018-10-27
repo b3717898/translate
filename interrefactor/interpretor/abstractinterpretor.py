@@ -49,6 +49,12 @@ class AbstractInterpretor(object):
         self.dollar_nl_words = re.compile(u"}[^}]*[\u4e00-\u9fa5]+[^}]*\\r")  # }吃饭\n
         self.comment_comment_words = re.compile(u"<!--.*[\u4e00-\u9fa5]+.*-->")  # <!--.吃饭.*-->
 
+        self.gt_quote_words = re.compile(u">[^><]*[\u4e00-\u9fa5]+[^\"]*\"")  # >吃饭吃饭"
+        self.gt_squote_words = re.compile(u">[^><]*[\u4e00-\u9fa5]+[^']*'")  # >吃饭吃饭'
+        self.squote_lt_words = re.compile(u"'[^'><]*[\u4e00-\u9fa5]+[^'<>]*<")  # '全部骑手合计订单数：<span
+        self.quote_lt_words = re.compile(u"\"[^\"><]*[\u4e00-\u9fa5]+[^\"<>]*<")  # "全部骑手合计订单数：<
+
+
 
 
 

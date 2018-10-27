@@ -571,9 +571,9 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
         key, other_key, matched = self.findkey(prop_name, match_str.encode('unicode_escape'), "P")
         if not matched: # key not matched
             if other_key is None:
-                comment_str = "#{} #rule:%s \n" % rule
+                comment_str = "#{} [#]rule:%s \n" % rule
             else:
-                comment_str = "#{} #rule:%s #matched in JS of %s\n" % (rule, other_key)
+                comment_str = "#{} [#]rule:%s #matched in JS of %s\n" % (rule, other_key)
             retvalue.append(comment_str.format(match_str))
             retvalue.append("{} = {}\n".format(key, match_str.encode('unicode_escape')))
         return retvalue, key
