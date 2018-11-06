@@ -49,10 +49,26 @@ class AbstractInterpretor(object):
         self.dollar_nl_words = re.compile(u"}[^}]*[\u4e00-\u9fa5]+[^}]*\\r")  # }吃饭\n
         self.comment_comment_words = re.compile(u"<!--.*[\u4e00-\u9fa5]+.*-->")  # <!--.吃饭.*-->
 
-        self.gt_quote_words = re.compile(u">[^><]*[\u4e00-\u9fa5]+[^\"]*\"")  # >吃饭吃饭"
-        self.gt_squote_words = re.compile(u">[^><]*[\u4e00-\u9fa5]+[^']*'")  # >吃饭吃饭'
+        self.gt_quote_words = re.compile(u">[^><\"]*[\u4e00-\u9fa5]+[^\"<>]*\"")  # >吃饭吃饭"
+        self.gt_squote_words = re.compile(u">[^'><]*[\u4e00-\u9fa5]+[^'<>]*'")  # >吃饭吃饭'
         self.squote_lt_words = re.compile(u"'[^'><]*[\u4e00-\u9fa5]+[^'<>]*<")  # '全部骑手合计订单数：<span
         self.quote_lt_words = re.compile(u"\"[^\"><]*[\u4e00-\u9fa5]+[^\"<>]*<")  # "全部骑手合计订单数：<
+        self.quot_lt_words = re.compile(u"&quot;[^;]*[\u4e00-\u9fa5]+[^&]*&")  # &quot;吃饭&
+
+        self.quote_lt_quote_words = re.compile(u"\"[^\"]*<[^<]*[\u4e00-\u9fa5]+[^\"]*\"") # "xxx<xxxxx吃饭xxxxx"
+        self.squote_lt_squote_words = re.compile(u"'[^']*<[^<]*[\u4e00-\u9fa5]+[^']*'") # 'xxx<xxxxx吃饭xxxxx'
+
+        self.ice_gt_words = re.compile(u"<ice:[^<>]*[\u4e00-\u9fa5]+[^<>]*>")  # <ice: xxxxx >
+        self.c_gt_words = re.compile(u"<c:[^<>]*[\u4e00-\u9fa5]+[^<>]*>")  # <c: xxxxx >
+        self.chinese_without_dollar_words = re.compile(u"\"[^\"${}#]*[\u4e00-\u9fa5]+[^\"${}#]*\"")  # abc = "吃饭吃饭" 不能有${}
+        self.squote_without_dollar_words = re.compile(u"'[^'${}#]*[\u4e00-\u9fa5]+[^'${}#]*'")     # abc = '吃饭吃饭' 不能有${}
+        self.s_gt_words = re.compile(u"<s:[^<>]*[\u4e00-\u9fa5]+[^<>]*>")  # <s: xxxxx >
+
+        self.dollar_brace_brace_words = re.compile(u"\\$\\{[^\\{\\}]*[\u4e00-\u9fa5]+[^\\{\\}]*\\}")  # ${xxxx吃饭xxxx}
+
+
+
+
 
 
 
@@ -70,7 +86,7 @@ class AbstractInterpretor(object):
     def __repr__(self):
         return repr(self.headers)
 
-    def convertfile(self, input_file, output_file, const_output_file):
+    def convertfile(self, input_file, output_file, const_output_file, jsp_el_file):
         # self.index = 1
         self.line = 1
         file_name = os.path.basename(input_file).split('.')[0]
@@ -81,12 +97,14 @@ class AbstractInterpretor(object):
         enum_lines = [] # ['','']
         try:
             for line in open_file.readlines():
-                trans_line, enum_lines, const_lines = self._convertline(line, file_name)
+                trans_line, enum_lines, const_lines, el_lines = self._convertline(line, file_name)
                 open_file_w.write(trans_line)
                 if len(enum_lines) > 0:
                     output_file.writelines(enum_lines)
                 if len(const_lines) > 0:
                     const_output_file.writelines(const_lines)
+                if len(el_lines) > 0:
+                    jsp_el_file.writelines(el_lines)
                 self.line += 1
                 # print trans_line
             # print os.path.abspath(file) + ":translate done"
@@ -116,6 +134,7 @@ class AbstractInterpretor(object):
         global props
         global js_props
         global case_props
+        key = key.replace("-", "_") # for the js file, there can not be '-' in the key, so we mush replace every '-' to '_'
         retvalue = key
         other_key = None
         matched = False
@@ -128,6 +147,7 @@ class AbstractInterpretor(object):
             if value in js_props:
                 other_key = js_props[value]
         elif flag == "J": # js properties
+            value = value.encode('unicode_escape')
             if value in js_props:
                 retvalue = js_props[value]
                 matched = True

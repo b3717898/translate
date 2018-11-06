@@ -61,4 +61,4 @@ class Java4i18nInterpretor(AbstractInterpretor):
         retvalue = retvalue.replace("[$TEMP_QUOTE_STR$]", "\\\"")
         retvalue = retvalue.replace("[$TEMP_COMMENT_STR$]", comment_temp_str)
 
-        return retvalue, enum_lines, const_lines
+        return retvalue, enum_lines, const_lines, []

@@ -40,9 +40,250 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
         #     const_lines.append("    /** {} */\n".format(match_str))
         #     const_lines.append("    String {} = {};\n".format(prop_name, match_str.replace("case ", "")))
 
-        it = re.finditer(self.gt_dollar_words, retvalue)  # 1 检查>和${之间的>xxx< for <h4>订单号:<abc>${result.stor
         enum_lines = []
+        el_lines = []
         index = 1
+
+        retvalue = retvalue.replace("\\\"", "[$TEMP_QUOTE_STR$]")
+        retvalue = retvalue.replace("\\\'", "[$TEMP_SQUOTE_STR$]")
+        it = re.finditer(self.ice_gt_words, retvalue)  # <ice:xxxxxxxx>
+        for match in it:
+            retvalue_sub = match.group()
+            it_sub = re.finditer(self.chinese_without_dollar_words, retvalue_sub) # 0.5 <ice:xxxx"吃饭"xxxx> 中的"吃饭"
+            for match_sub in it_sub:
+                # print (match.group())
+                prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                # print match.group()
+                if prop_name in self.prop_name:
+                    prop_name = prop_name + "_" + str(self.globe_count)
+                    self.globe_count += 1
+                self.prop_name[prop_name] = "1"
+                # CommonI18n.rb.getString("COMMON.SEARCH");
+                match_str = match_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                match_str = match_str[1:-1]
+                prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.5")
+                key_var = key + "_var"
+                el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                replace_str_sub = "\"${%s}\"" % key_var
+                retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
+                enum_lines.extend(prop_lines)
+                index += 1
+            it_sub = re.finditer(self.squote_without_dollar_words, retvalue_sub)  # 0.51 <ice:xxxx'吃饭'xxxx> 中的'吃饭'
+            for match_sub in it_sub:
+                # print (match.group())
+                prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                # print match.group()
+                if prop_name in self.prop_name:
+                    prop_name = prop_name + "_" + str(self.globe_count)
+                    self.globe_count += 1
+                self.prop_name[prop_name] = "1"
+                # CommonI18n.rb.getString("COMMON.SEARCH");
+                match_str = match_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                match_str = match_str[1:-1]
+                prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.51")
+                key_var = key + "_var"
+                el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                replace_str_sub = "'${%s}'" % key_var
+                retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
+                enum_lines.extend(prop_lines)
+                index += 1
+            retvalue = retvalue.replace(match.group(), retvalue_sub)
+
+        it = re.finditer(self.c_gt_words, retvalue)  # <c:xxxxxxxx>
+        for match in it:
+            retvalue_sub = match.group()
+            it_sub = re.finditer(self.dollar_brace_brace_words, retvalue_sub)
+            for match_sub in it_sub:
+                retvalue_sub_sub = match_sub.group()
+                it_sub_sub = re.finditer(self.chinese_without_dollar_words, retvalue_sub_sub)  # 0.61 <c:x${xxx"吃饭"xx}xx> 中的"吃饭"
+                for match_sub_sub in it_sub_sub:
+                    prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                    # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                    # print match.group()
+                    if prop_name in self.prop_name:
+                        prop_name = prop_name + "_" + str(self.globe_count)
+                        self.globe_count += 1
+                    self.prop_name[prop_name] = "1"
+                    # CommonI18n.rb.getString("COMMON.SEARCH");
+                    match_str = match_sub_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                    match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                    match_str = match_str[1:-1]
+                    prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.61")
+                    key_var = key + "_var"
+                    el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                    replace_str_sub_sub = " %s " % key_var
+                    retvalue_sub_sub = retvalue_sub_sub.replace(match_sub_sub.group(), replace_str_sub_sub)
+                    enum_lines.extend(prop_lines)
+                    index += 1
+                it_sub_sub = re.finditer(self.squote_without_dollar_words,
+                                         retvalue_sub_sub)  # 0.62 <c:xx${xx'吃饭'xx}xx> 中的'吃饭'
+                for match_sub_sub in it_sub_sub:
+                    prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                    # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                    # print match.group()
+                    if prop_name in self.prop_name:
+                        prop_name = prop_name + "_" + str(self.globe_count)
+                        self.globe_count += 1
+                    self.prop_name[prop_name] = "1"
+                    # CommonI18n.rb.getString("COMMON.SEARCH");
+                    match_str = match_sub_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                    match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                    match_str = match_str[1:-1]
+                    prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.62")
+                    key_var = key + "_var"
+                    el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                    replace_str_sub_sub = " %s " % key_var
+                    retvalue_sub_sub = retvalue_sub_sub.replace(match_sub_sub.group(), replace_str_sub_sub)
+                    enum_lines.extend(prop_lines)
+                    index += 1
+                retvalue_sub = retvalue_sub.replace(match_sub.group(), retvalue_sub_sub)
+
+            it_sub = re.finditer(self.chinese_without_dollar_words, retvalue_sub)  # 0.63 <c:xxxx"吃饭"xxxx> 中的"吃饭"
+            for match_sub in it_sub:
+                # print (match.group())
+                prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                # print match.group()
+                if prop_name in self.prop_name:
+                    prop_name = prop_name + "_" + str(self.globe_count)
+                    self.globe_count += 1
+                self.prop_name[prop_name] = "1"
+                # CommonI18n.rb.getString("COMMON.SEARCH");
+                match_str = match_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                match_str = match_str[1:-1]
+                prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.63")
+                key_var = key + "_var"
+                el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                replace_str_sub = "\"${%s}\"" % key_var
+                retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
+                enum_lines.extend(prop_lines)
+                index += 1
+            it_sub = re.finditer(self.squote_without_dollar_words, retvalue_sub)  # 0.64 <c:xxxx'吃饭'xxxx> 中的'吃饭'
+            for match_sub in it_sub:
+                # print (match.group())
+                prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                # print match.group()
+                if prop_name in self.prop_name:
+                    prop_name = prop_name + "_" + str(self.globe_count)
+                    self.globe_count += 1
+                self.prop_name[prop_name] = "1"
+                # CommonI18n.rb.getString("COMMON.SEARCH");
+                match_str = match_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                match_str = match_str[1:-1]
+                prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.71")
+                key_var = key + "_var"
+                el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                replace_str_sub = "'${%s}'" % key_var
+                retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
+                enum_lines.extend(prop_lines)
+                index += 1
+            retvalue = retvalue.replace(match.group(), retvalue_sub)
+
+        it = re.finditer(self.s_gt_words, retvalue)  # <s:xxxxxxxx>
+        for match in it:
+            retvalue_sub = match.group()
+            it_sub = re.finditer(self.dollar_brace_brace_words, retvalue_sub)
+            for match_sub in it_sub:
+                retvalue_sub_sub = match_sub.group()
+                it_sub_sub = re.finditer(self.chinese_without_dollar_words,
+                                         retvalue_sub_sub)  # 0.71 <s:x${xxx"吃饭"xx}xx> 中的"吃饭"
+                for match_sub_sub in it_sub_sub:
+                    prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                    # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                    # print match.group()
+                    if prop_name in self.prop_name:
+                        prop_name = prop_name + "_" + str(self.globe_count)
+                        self.globe_count += 1
+                    self.prop_name[prop_name] = "1"
+                    # CommonI18n.rb.getString("COMMON.SEARCH");
+                    match_str = match_sub_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                    match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                    match_str = match_str[1:-1]
+                    prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.71")
+                    key_var = key + "_var"
+                    el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                    replace_str_sub_sub = " %s " % key_var
+                    retvalue_sub_sub = retvalue_sub_sub.replace(match_sub_sub.group(), replace_str_sub_sub)
+                    enum_lines.extend(prop_lines)
+                    index += 1
+                it_sub_sub = re.finditer(self.squote_without_dollar_words,
+                                         retvalue_sub_sub)  # 0.72 <s:xx${xx'吃饭'xx}xx> 中的'吃饭'
+                for match_sub_sub in it_sub_sub:
+                    prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                    # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                    # print match.group()
+                    if prop_name in self.prop_name:
+                        prop_name = prop_name + "_" + str(self.globe_count)
+                        self.globe_count += 1
+                    self.prop_name[prop_name] = "1"
+                    # CommonI18n.rb.getString("COMMON.SEARCH");
+                    match_str = match_sub_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                    match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                    match_str = match_str[1:-1]
+                    prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.72")
+                    key_var = key + "_var"
+                    el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                    replace_str_sub_sub = " %s " % key_var
+                    retvalue_sub_sub = retvalue_sub_sub.replace(match_sub_sub.group(), replace_str_sub_sub)
+                    enum_lines.extend(prop_lines)
+                    index += 1
+                retvalue_sub = retvalue_sub.replace(match_sub.group(), retvalue_sub_sub)
+
+            it_sub = re.finditer(self.chinese_without_dollar_words, retvalue_sub)  # 0.73 <s:xxxx"吃饭"xxxx> 中的"吃饭"
+            for match_sub in it_sub:
+                # print (match.group())
+                prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                # print match.group()
+                if prop_name in self.prop_name:
+                    prop_name = prop_name + "_" + str(self.globe_count)
+                    self.globe_count += 1
+                self.prop_name[prop_name] = "1"
+                # CommonI18n.rb.getString("COMMON.SEARCH");
+                match_str = match_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                match_str = match_str[1:-1]
+                prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.73")
+                key_var = key + "_var"
+                el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                replace_str_sub = "\"${%s}\"" % key_var
+                retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
+                enum_lines.extend(prop_lines)
+                index += 1
+            it_sub = re.finditer(self.squote_without_dollar_words, retvalue_sub)  # 0.74 <s:xxxx'吃饭'xxxx> 中的'吃饭'
+            for match_sub in it_sub:
+                # print (match.group())
+                prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                # print match.group()
+                if prop_name in self.prop_name:
+                    prop_name = prop_name + "_" + str(self.globe_count)
+                    self.globe_count += 1
+                self.prop_name[prop_name] = "1"
+                # CommonI18n.rb.getString("COMMON.SEARCH");
+                match_str = match_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                match_str = match_str[1:-1]
+                prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.74")
+                key_var = key + "_var"
+                el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                replace_str_sub = "'${%s}'" % key_var
+                retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
+                enum_lines.extend(prop_lines)
+                index += 1
+            retvalue = retvalue.replace(match.group(), retvalue_sub)
+
+        retvalue = retvalue.replace("[$TEMP_QUOTE_STR$]", "\\\"")
+        retvalue = retvalue.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+
+        it = re.finditer(self.gt_dollar_words, retvalue)  # 1 检查>和${之间的>xxx< for <h4>订单号:<abc>${result.stor
         for match in it:
             retvalue_sub = match.group()
             it_sub = re.finditer(self.gtlt_words, retvalue_sub)
@@ -328,6 +569,9 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
             enum_lines.extend(prop_lines)
             index += 1
 
+        retvalue = retvalue.replace("\\\"", "[$TEMP_QUOTE_STR$]")
+        retvalue = retvalue.replace("\\\'", "[$TEMP_SQUOTE_STR$]")
+
         it = re.finditer(self.squote_words, retvalue)  # 9.0 检查'和'之间的'xxx"xx"xxx' for 'xx"xx"xx'
         for match in it:
             retvalue_sub = match.group()
@@ -423,7 +667,8 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
             match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
             match_str = match_str[1:-1]
             prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "10")
-            replace_str = "'<fmt:message key=\"%s\" bundle=\"${lang}\"/>'" % key
+            replace_str = self.filter_fmt_str(retvalue, "\"", key)
+            # replace_str = "'<fmt:message key=\"%s\" bundle=\"${lang}\"/>'" % key
             retvalue = retvalue.replace(match.group(), replace_str)
             enum_lines.extend(prop_lines)
             index += 1
@@ -564,7 +809,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
         retvalue = retvalue.replace("[$TEMP_COMMENT_STR$]", comment_temp_str)
         retvalue = retvalue.replace("[$TEMP_COMMENT_COMMENT_STR$]", comment_comment_temp_str)
 
-        return retvalue, enum_lines, const_lines
+        return retvalue, enum_lines, const_lines, el_lines
 
     def get_common_prop_lines(self, prop_name, match_str, rule):
         retvalue=[]
@@ -577,3 +822,12 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
             retvalue.append(comment_str.format(match_str))
             retvalue.append("{} = {}\n".format(key, match_str.encode('unicode_escape')))
         return retvalue, key
+
+    def filter_fmt_str(self, line, quote_str, key):
+        retvalue = ""
+        if line.strip().startswith('<c:if test="'):
+            retvalue = "<fmt:message key=\\\"%s\\\" bundle=\\\"${lang}\\\"/>" % key
+        else:
+            retvalue = "<fmt:message key=\"%s\" bundle=\"${lang}\"/>" % key
+
+        return retvalue

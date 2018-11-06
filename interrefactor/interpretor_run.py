@@ -20,28 +20,33 @@ from interpretor.js4i18ninterpretor import *
 
 interpretors = {}
 
-def interpret_path(path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w, js_enum_file_java_w, common_enum_file_java_w):
+def interpret_path(path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w, js_enum_file_java_w,
+                   common_enum_file_java_w, jsp_el_file_java_w):
     if os.path.isdir(path):
         for file in os.listdir(path):
             file_path = os.path.join(path, file)
             if os.path.isfile(file_path):
-                if '_transdone' in file or '.DS_Store' in file:
+                if '_transdone' in file \
+                        or '.DS_Store' in file \
+                        or 'ligerComboBox.js' in file:
                     pass
                 elif '.java' in file:
                     tran_file = os.path.join(path, file)
-                    interpretors["java"].convertfile(tran_file, common_enum_file_java_w, const_file_java_w)
+                    interpretors["java"].convertfile(tran_file, common_enum_file_java_w, const_file_java_w, jsp_el_file_java_w)
                 elif '.jsp' in file:
                     # continue
                     tran_file = os.path.join(path, file)
-                    interpretors["jsp"].convertfile(tran_file, common_enum_file_java_w, const_file_java_w)
+                    interpretors["jsp"].convertfile(tran_file, common_enum_file_java_w, const_file_java_w, jsp_el_file_java_w)
                 elif '.js' in file:
+                    # continue
                     tran_file = os.path.join(path, file)
-                    interpretors["js"].convertfile(tran_file, js_enum_file_java_w, const_file_java_w)
+                    interpretors["js"].convertfile(tran_file, js_enum_file_java_w, const_file_java_w, jsp_el_file_java_w)
                 elif '.xml' in file:
                     # todo list
                     continue
             else:
-                interpret_path(file_path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w, js_enum_file_java_w, common_enum_file_java_w)
+                interpret_path(file_path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w,
+                               js_enum_file_java_w, common_enum_file_java_w, jsp_el_file_java_w)
     else:
         print 'the input is not a folder:' + path
 
@@ -60,6 +65,7 @@ if __name__ == '__main__':
     jsp_output_filename = JAVA_COMMON_4_I18N_JSP_ENUM_OUTPUT_FILENAME
     js_output_filename = JAVA_COMMON_4_I18N_JS_ENUM_OUTPUT_FILENAME
     common_output_filename = JAVA_COMMON_4_I18N_COMMON_ENUM_OUTPUT_FILENAME
+    jsp_el_output_filename = JAVA_COMMON_4_I18N_JSP_FMT_OUTPUT_FILENAME
 
     interpretors["java"] = Java4i18nInterpretor()
     interpretors["jsp"] = Jsp4i18nInterpretor()
@@ -67,14 +73,17 @@ if __name__ == '__main__':
     # interpretors["xml"] = XMLInterpretor()
 
     # build a enum file
-    enum_file_java = os.path.join(i18n_path, output_filename)
-    enum_file_java_w = codecs.open(enum_file_java, 'w', 'utf-8')
+    # enum_file_java = os.path.join(i18n_path, output_filename)
+    # enum_file_java_w = codecs.open(enum_file_java, 'w', 'utf-8')
 
-    jsp_enum_file_java = os.path.join(i18n_path, jsp_output_filename)
-    jsp_enum_file_java_w = codecs.open(jsp_enum_file_java, 'w', 'utf-8')
+    # jsp_enum_file_java = os.path.join(i18n_path, jsp_output_filename)
+    # jsp_enum_file_java_w = codecs.open(jsp_enum_file_java, 'w', 'utf-8')
 
     common_enum_file_java = os.path.join(i18n_path, common_output_filename)
     common_enum_file_java_w = codecs.open(common_enum_file_java, 'w', 'utf-8')
+
+    jsp_el_file_java = os.path.join(i18n_path, jsp_el_output_filename)
+    jsp_el_file_java_w = codecs.open(jsp_el_file_java, 'w', 'utf-8')
 
     js_enum_file_java = os.path.join(i18n_path, js_output_filename)
     js_enum_file_java_w = codecs.open(js_enum_file_java, 'w', 'utf-8')
@@ -92,13 +101,15 @@ if __name__ == '__main__':
                                   "TEST_TRANS_CONTENT = 测试翻译内容\n"]
         js_file_java_content = ["/*This is an js i18n propteries file */\n", "\n",
                                   "var M4JS = {\n"]
+        jsp_el_file_java_content = ["<!-- this is common fmt el file --> \n"]
         # todo list
-        enum_file_java_w.writelines(enum_file_java_content)
+        # enum_file_java_w.writelines(enum_file_java_content)
         const_file_java_w.writelines(const_file_java_content)
-        jsp_enum_file_java_w.writelines(enum_file_java_content)
+        # jsp_enum_file_java_w.writelines(enum_file_java_content)
         js_enum_file_java_w.writelines(js_file_java_content)
         common_enum_file_java_w.writelines(enum_file_java_content)
-        interpret_path(src_path, enum_file_java_w, const_file_java_w, jsp_enum_file_java_w, js_enum_file_java_w, common_enum_file_java_w)
+        jsp_el_file_java_w.writelines(jsp_el_file_java_content)
+        interpret_path(src_path, None, const_file_java_w, None, js_enum_file_java_w, common_enum_file_java_w, jsp_el_file_java_w)
 
         const_file_java_content = ["}\n", "\n"]
         const_file_java_w.writelines(const_file_java_content)
@@ -108,11 +119,12 @@ if __name__ == '__main__':
     except Exception, e:
         print 'build i18n file error:{}'.format(e)
     finally:
-        enum_file_java_w.close()
+        # enum_file_java_w.close()
         const_file_java_w.close()
-        jsp_enum_file_java_w.close()
+        # jsp_enum_file_java_w.close()
         js_enum_file_java_w.close()
         common_enum_file_java_w.close()
+        jsp_el_file_java_w.close()
 
     # if os.path.isdir(path):
     #     for file in os.listdir(path):
