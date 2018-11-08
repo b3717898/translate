@@ -24,7 +24,7 @@ class AbstractInterpretor(object):
         self.chinese_without_gt_words = re.compile(u"\"[^\">]*[\u4e00-\u9fa5]+[^\">]*\"")  # abc = "吃饭吃饭"
         self.chinese_words_with_CASE = re.compile(u"case \"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")     # case "吃饭吃饭"
         self.comment_words = re.compile(u"//.*[\u4e00-\u9fa5]+.*")          # //吃饭吃饭
-        self.gtlt_words = re.compile(u">[^><]*[\u4e00-\u9fa5]+[^<>]*<")      # >吃饭吃饭</
+        self.gtlt_words = re.compile(u">[^><]*[\u4e00-\u9fa5]+[^<]*<")      # >吃饭吃饭</
         self.squote_words = re.compile(u"'[^']*[\u4e00-\u9fa5]+[^']*'")     # abc = '吃饭吃饭'
         self.slash_squote_words = re.compile(u"\\\\'[^']*[\u4e00-\u9fa5]+[^']*\\\\'")  # abc = \'吃饭吃饭\'
         self.qtlt_with_squote_words = re.compile(u"'\s*<.*>[^<]*[\u4e00-\u9fa5]+[^<]*</")    # cashDailyPosItemConfigTableDiv.push('<th width="120">项目</th>');
@@ -58,11 +58,11 @@ class AbstractInterpretor(object):
         self.quote_lt_quote_words = re.compile(u"\"[^\"]*<[^<]*[\u4e00-\u9fa5]+[^\"]*\"") # "xxx<xxxxx吃饭xxxxx"
         self.squote_lt_squote_words = re.compile(u"'[^']*<[^<]*[\u4e00-\u9fa5]+[^']*'") # 'xxx<xxxxx吃饭xxxxx'
 
-        self.ice_gt_words = re.compile(u"<ice:[^<>]*[\u4e00-\u9fa5]+[^<>]*>")  # <ice: xxxxx >
-        self.c_gt_words = re.compile(u"<c:[^<>]*[\u4e00-\u9fa5]+[^<>]*>")  # <c: xxxxx >
+        self.ice_gt_words = re.compile(u"<ice:[^<>]*[\u4e00-\u9fa5]+[^<>]*[>\"]")  # <ice: xxxxx > 或者 <ice: xxxxx "
+        self.c_gt_words = re.compile(u"<c:[^<>]*[\u4e00-\u9fa5]+[^<>]*[>\"]")  # <c: xxxxx >
         self.chinese_without_dollar_words = re.compile(u"\"[^\"${}#]*[\u4e00-\u9fa5]+[^\"${}#]*\"")  # abc = "吃饭吃饭" 不能有${}
         self.squote_without_dollar_words = re.compile(u"'[^'${}#]*[\u4e00-\u9fa5]+[^'${}#]*'")     # abc = '吃饭吃饭' 不能有${}
-        self.s_gt_words = re.compile(u"<s:[^<>]*[\u4e00-\u9fa5]+[^<>]*>")  # <s: xxxxx >
+        self.s_gt_words = re.compile(u"<s:[^<>]*[\u4e00-\u9fa5]+[^<>]*[>\"]")  # <s: xxxxx >
 
         self.dollar_brace_brace_words = re.compile(u"\\$\\{[^\\{\\}]*[\u4e00-\u9fa5]+[^\\{\\}]*\\}")  # ${xxxx吃饭xxxx}
 
