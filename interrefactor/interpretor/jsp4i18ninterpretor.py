@@ -65,6 +65,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
                 match_str = match_str[1:-1]
                 prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.5")
                 key_var = key + "_var"
+                el_lines.append("<!-- %s -->\n" % match_str)
                 el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
                 replace_str_sub = "\"${%s}\"" % key_var
                 retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
@@ -86,6 +87,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
                 match_str = match_str[1:-1]
                 prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.51")
                 key_var = key + "_var"
+                el_lines.append("<!-- %s -->\n" % match_str)
                 el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
                 replace_str_sub = "'${%s}'" % key_var
                 retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
@@ -114,6 +116,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
                     match_str = match_str[1:-1]
                     prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.61")
                     key_var = key + "_var"
+                    el_lines.append("<!-- %s -->\n" % match_str)
                     el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
                     replace_str_sub_sub = " %s " % key_var
                     retvalue_sub_sub = retvalue_sub_sub.replace(match_sub_sub.group(), replace_str_sub_sub)
@@ -135,6 +138,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
                     match_str = match_str[1:-1]
                     prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.62")
                     key_var = key + "_var"
+                    el_lines.append("<!-- %s -->\n" % match_str)
                     el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
                     replace_str_sub_sub = " %s " % key_var
                     retvalue_sub_sub = retvalue_sub_sub.replace(match_sub_sub.group(), replace_str_sub_sub)
@@ -158,6 +162,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
                 match_str = match_str[1:-1]
                 prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.63")
                 key_var = key + "_var"
+                el_lines.append("<!-- %s -->\n" % match_str)
                 el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
                 replace_str_sub = "\"${%s}\"" % key_var
                 retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
@@ -179,6 +184,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
                 match_str = match_str[1:-1]
                 prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.71")
                 key_var = key + "_var"
+                el_lines.append("<!-- %s -->\n" % match_str)
                 el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
                 replace_str_sub = "'${%s}'" % key_var
                 retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
@@ -208,6 +214,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
                     match_str = match_str[1:-1]
                     prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.71")
                     key_var = key + "_var"
+                    el_lines.append("<!-- %s -->\n" % match_str)
                     el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
                     replace_str_sub_sub = " %s " % key_var
                     retvalue_sub_sub = retvalue_sub_sub.replace(match_sub_sub.group(), replace_str_sub_sub)
@@ -229,6 +236,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
                     match_str = match_str[1:-1]
                     prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.72")
                     key_var = key + "_var"
+                    el_lines.append("<!-- %s -->\n" % match_str)
                     el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
                     replace_str_sub_sub = " %s " % key_var
                     retvalue_sub_sub = retvalue_sub_sub.replace(match_sub_sub.group(), replace_str_sub_sub)
@@ -252,6 +260,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
                 match_str = match_str[1:-1]
                 prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.73")
                 key_var = key + "_var"
+                el_lines.append("<!-- %s -->\n" % match_str)
                 el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
                 replace_str_sub = "\"${%s}\"" % key_var
                 retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)
@@ -273,6 +282,7 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
                 match_str = match_str[1:-1]
                 prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.74")
                 key_var = key + "_var"
+                el_lines.append("<!-- %s -->\n" % match_str)
                 el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
                 replace_str_sub = "'${%s}'" % key_var
                 retvalue_sub = retvalue_sub.replace(match_sub.group(), replace_str_sub)

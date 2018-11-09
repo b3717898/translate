@@ -66,7 +66,7 @@ class AbstractInterpretor(object):
 
         self.dollar_brace_brace_words = re.compile(u"\\$\\{[^\\{\\}]*[\u4e00-\u9fa5]+[^\\{\\}]*\\}")  # ${xxxx吃饭xxxx}
 
-
+        #<ice:renderForGrid
 
 
 
