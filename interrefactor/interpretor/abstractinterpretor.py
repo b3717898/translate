@@ -65,7 +65,7 @@ class AbstractInterpretor(object):
         self.s_gt_words = re.compile(u"<s:[^<>]*[\u4e00-\u9fa5]+[^<>]*[>\"]")  # <s: xxxxx >
 
         self.dollar_brace_brace_words = re.compile(u"\\$\\{[^\\{\\}]*[\u4e00-\u9fa5]+[^\\{\\}]*\\}")  # ${xxxx吃饭xxxx}
-
+        self.onclick_quote_quote_words = re.compile(u"onclick=\"[^\"]*[\u4e00-\u9fa5]+[^\"]*\"")  # onclick="xxx吃饭xxx"
         #<ice:renderForGrid
 
 

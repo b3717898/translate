@@ -1,0 +1,30 @@
+{u'了': (False, True, u''), u'无精打': (False, True, u''), u'打谷': (True, False, u'打穀'), u'没精打采': (True, False, u'沒精打采'), u'复印': (True, False, u'複印'), u'无精打采': (True, False, u'無精打采'), u'无精': (False, True, u''), u'没精': (False, True, u''), u'没': (False, True, u''), u'没精打': (False, True, u''), u'印表': (False, True, u''), u'机': (True, False, u'機'), u'了无生趣': (True, False, u'ABCD'), u'无生': (False, True, u''), u'无生所': (False, True, u''), u'呆': (True, False, u'獃'), u'复': (False, True, u''), u'了无生': (False, True, u''), u'打印': (True, False, u'DY'), u'打': (True, True, u'D'), u'无生所涯': (True, False, u'XYZT'), u'无': (False, True, u''), u'印制': (True, False, u'印製'), u'了无': (False, True, u''), u'印': (True, True, u'Y'), u'印表機': (True, False, u'打印机')}
+
+0 = {StatesMachine} <StatesMachine 4519539984, pool: "", state: 1, final: 了>
+1 = {StatesMachine} <StatesMachine 4519540816, pool: "了", state: 3, final: >   new
+
+0 = {StatesMachine} <StatesMachine 4511569168, pool: "", state: 1, final: 了无>
+1 = {StatesMachine} <StatesMachine 4511570000, pool: "了无", state: 3, final: >
+2 = {StatesMachine} <StatesMachine 4511570960, pool: "无", state: 3, final: 了>   new
+
+0 = {StatesMachine} <StatesMachine 4360701200, pool: "", state: 1, final: 了无生>
+1 = {StatesMachine} <StatesMachine 4360702032, pool: "了无生", state: 3, final: >
+2 = {StatesMachine} <StatesMachine 4360702992, pool: "无生", state: 3, final: 了>
+
+0 = {StatesMachine} <StatesMachine 4527133968, pool: "", state: 1, final: 了无生所>
+1 = {StatesMachine} <StatesMachine 4527135760, pool: "无生所", state: 3, final: 了>
+
+0 = {StatesMachine} <StatesMachine 4527133968, pool: "", state: 1, final: 了无生所涯>
+1 = {StatesMachine} <StatesMachine 4527135760, pool: "", state: 1, final: 了XYZT>
+
+test content：
+abc_ P了无生所涯打谷TIM_R010101.jsp
+abc人工智能
+abc了无生趣def
+abc了无生所涯def
+abc呆呆呆def
+abc没精打采无精打采def
+abc复印制复印无精打采复印吃饭打印def
+abc打印谷def
+
+

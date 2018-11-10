@@ -50,7 +50,37 @@ def interpret_path(path, enum_file_java_w, const_file_java_w, jsp_enum_file_java
     else:
         print 'the input is not a folder:' + path
 
-
+def filter_el_file(el_file_path):
+    file_name = os.path.basename(el_file_path).split('.')[0]
+    file_name_tr = os.path.basename(el_file_path).split('.')[0] + '_transdone.txt'
+    open_file = codecs.open(el_file_path, 'r', 'utf-8')
+    open_file_w = codecs.open(os.path.join(os.path.dirname(el_file_path), file_name_tr), 'w', 'utf-8')
+    is_translated = True
+    el_keys = {}
+    try:
+        for line in open_file.readlines():
+            if line not in el_keys:
+                open_file_w.write(line)
+                el_keys[line] = "1"
+            # print trans_line
+        # print os.path.abspath(file) + ":translate done"
+    except Exception, e:
+        is_translated = False
+        print 'filter el file error:{}'.format(e)
+    finally:
+        open_file.close()
+        open_file_w.close()
+    if is_translated:
+        #   rename translated file to original file & del the translated file
+        try:
+            abs_file = os.path.abspath(el_file_path)
+            file_rename_to = os.path.join(os.path.dirname(el_file_path), os.path.basename(el_file_path) + '_rename')
+            os.rename(abs_file, file_rename_to)
+            os.rename(os.path.join(os.path.dirname(el_file_path), file_name_tr), abs_file)
+            os.remove(file_rename_to)
+            print abs_file + ":filter el file done:" + str(datetime.datetime.now())
+        except Exception, e:
+            print 'filter el file error:{}'.format(e)
 
 if __name__ == '__main__':
 
@@ -125,7 +155,8 @@ if __name__ == '__main__':
         js_enum_file_java_w.close()
         common_enum_file_java_w.close()
         jsp_el_file_java_w.close()
-
+    # filter the el file (message4EL.jsp) to remove the repeat var
+    filter_el_file(jsp_el_file_java)
     # if os.path.isdir(path):
     #     for file in os.listdir(path):
     #         if os.path.isfile(os.path.abspath(file)):

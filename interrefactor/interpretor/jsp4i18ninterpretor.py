@@ -46,6 +46,39 @@ class Jsp4i18nInterpretor(AbstractInterpretor):
 
         retvalue = retvalue.replace("\\\"", "[$TEMP_QUOTE_STR$]")
         retvalue = retvalue.replace("\\\'", "[$TEMP_SQUOTE_STR$]")
+
+        it = re.finditer(self.ice_gt_words, retvalue)  # <ice:xxxxxxxx>
+        for match in it:
+            retvalue_sub = match.group()
+            it_sub = re.finditer(self.onclick_quote_quote_words, retvalue_sub)  # onclick="xxx吃饭xxx"
+            for match_sub in it_sub:
+                retvalue_sub_sub = match_sub.group()
+                it_sub_sub = re.finditer(self.squote_words,
+                                         retvalue_sub_sub)  # 0.49 <ice:xxxxonclick="xxxx'吃饭'xxxx">
+                for match_sub_sub in it_sub_sub:
+                    prop_name = "{}_L{}_{}".format(file_name, str(self.line), str(index))
+                    # file_name + "_" + JAVA_COMMON_ENUM_PARAM_PREFIX + "_" + str(self.index)
+                    # print match.group()
+                    if prop_name in self.prop_name:
+                        prop_name = prop_name + "_" + str(self.globe_count)
+                        self.globe_count += 1
+                    self.prop_name[prop_name] = "1"
+                    # CommonI18n.rb.getString("COMMON.SEARCH");
+                    match_str = match_sub_sub.group().replace("[$TEMP_QUOTE_STR$]", "\\\"")
+                    match_str = match_str.replace("[$TEMP_SQUOTE_STR$]", "\\\'")
+                    match_str = match_str[1:-1]
+                    prop_lines, key = self.get_common_prop_lines(prop_name, match_str, "0.49")
+                    key_var = key + "_var"
+                    el_lines.append("<!-- %s -->\n" % match_str)
+                    el_lines.append("<fmt:message key=\"%s\" bundle=\"${lang}\" var=\"%s\"/>\n" % (key, key_var))
+                    replace_str_sub_sub = "'${%s}'" % key_var
+                    retvalue_sub_sub = retvalue_sub_sub.replace(match_sub_sub.group(), replace_str_sub_sub)
+                    enum_lines.extend(prop_lines)
+                    index += 1
+                retvalue_sub = retvalue_sub.replace(match_sub.group(), retvalue_sub_sub)
+            retvalue = retvalue.replace(match.group(), retvalue_sub)
+
+
         it = re.finditer(self.ice_gt_words, retvalue)  # <ice:xxxxxxxx>
         for match in it:
             retvalue_sub = match.group()
