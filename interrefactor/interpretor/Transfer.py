@@ -58,7 +58,7 @@ class Transfer:
                 value = value[0].replace("=", "").strip()
             else:
                 value = ""
-            print key, value
+            print(key, value)
             self.source_dict[key] = value
 
     def __start_js(self):
@@ -68,11 +68,11 @@ class Transfer:
                     if s_key == re.sub("\[#\]rule.*$", "", line).replace("//", "").strip():
                         index = self.target_list.index(line)
                         t_index = index + 1
-                        print "before...", self.target_list[t_index]
+                        print("before...", self.target_list[t_index])
                         source_str = self.target_list[t_index]
                         key_str = source_str[source_str.find('"') + 1:source_str.rfind('"')]
                         self.target_list[t_index] = source_str.replace(key_str, self.source_dict[s_key])
-                        print "after...", self.target_list[t_index]
+                        print("after...", self.target_list[t_index])
 
     def __get_new_file(self):
         new_file = codecs.open(self.new_target_file, 'w', 'utf-8')
