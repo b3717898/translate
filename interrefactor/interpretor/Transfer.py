@@ -29,6 +29,11 @@ class Transfer:
             self.target_list.append(i)
 
     def __get_list(self, start_num):
+        """
+        获取源文件list，将源文件中每两行当做list中一个元素
+        :param start_num: 开始位置，每一次从上一次结束位置算下一次其实位置
+        :return: 返回每一次查找的结束位置+1
+        """
         first = self.s_file.find("#", start_num)
         if first == -1:
             return False
