@@ -48,8 +48,11 @@ class Transfer:
         num = 0
         while True:
             num = self.__get_list(num)
-            if num != len(self.s_file) + 1:
-                continue
+            if num:
+                if num != len(self.s_file) + 1:
+                    continue
+                else:
+                    break
             else:
                 break
 
